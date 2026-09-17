@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cosmic-Oracle</title>
+    <meta
+      name="description"
+      content="A celestial guidance oracle for asking the stars for insight."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="stars"></div>
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="Cosmic Oracle brand">
+          <span class="brand-mark">✦</span>
+          <span>Cosmic-Oracle</span>
+        </div>
+      </header>
+
+      <section class="oracle-panel">
+        <div class="panel-copy">
+          <p class="eyebrow">Celestial Guidance</p>
+          <h1>Ask the stars for clarity.</h1>
+          <p class="subtitle">
+            Seek direction, trust the rhythm of the cosmos, and receive a glowing omen for your next step.
+          </p>
+        </div>
+
+        <form id="oracle-form" class="oracle-form">
+          <label for="question-input">Your question</label>
+          <textarea
+            id="question-input"
+            rows="3"
+            placeholder="What should I trust on my next path?"
+          ></textarea>
+          <button type="submit">Consult the cosmos</button>
+        </form>
+      </section>
+
+      <section class="reading-panel" aria-live="polite">
+        <div class="reading-header">
+          <p class="eyebrow">Current omen</p>
+          <div class="constellation" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="reading-card">
+          <p id="reading-sign" class="reading-sign">The Veil of Possibility</p>
+          <h2 id="reading-title">Awaiting your question</h2>
+          <p id="reading-text">
+            The stars are listening. Ask the cosmos a question and the oracle will reveal the next guiding thread.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
