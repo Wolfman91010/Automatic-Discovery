@@ -41,7 +41,6 @@ READINGS = [
     },
 ]
 
-
 class CosmicOracleApp:
     def __init__(self, root):
         self.root = root
@@ -49,7 +48,6 @@ class CosmicOracleApp:
         self.root.geometry("820x620")
         self.root.minsize(760, 560)
         self.root.configure(bg="#060914")
-
         self._build_ui()
         self._set_default_reading()
 
@@ -150,7 +148,15 @@ class CosmicOracleApp:
             text="Consult the cosmos",
             command=self.ask_cosmos,
         )
-        self.ask_button.grid(row=0, column=0, sticky="w")
+        self.ask_button.grid(row=0, column=0, sticky="w", padx=(0, 8))
+
+        # Added Listen button right next to the consult button
+        self.listen_button = ttk.Button(
+            button_row,
+            text="🔊 Listen to Omen",
+            command=self.speak_current_omen,
+        )
+        self.listen_button.grid(row=0, column=1, sticky="w")
 
         reading_panel = tk.Frame(inner, bg="#101935", padx=18, pady=18)
         reading_panel.grid(row=2, column=0, sticky="nsew", pady=(18, 0))
@@ -213,22 +219,29 @@ class CosmicOracleApp:
         self.sign_label.config(text=reading["sign"])
         self.title_label.config(text=f"{reading['title']} for {focus_word}")
         
+        # Combined text view shown in the UI box
         spoken_text = (
             f"{reading['text']} Your question, \"{question}\", is being carried by a current of possibility and personal growth."
         )
-        
         self.text_label.config(text=spoken_text)
         self.question_entry.delete("1.0", "end")
-        
-        # Speak the omen aloud automatically
-        speak_omen(spoken_text)
+        # Note: We no longer auto-speak here, so the user can choose to click "Listen to Omen"
 
+    def speak_current_omen(self):
+        """Extracts and reads aloud only the last paragraph/sentence block of the current reading."""
+        current_text = self.text_label.cget("text")
+        if current_text:
+            # Splitting by sentences or periods to isolate the last paragraph/thought
+            sentences = [s.strip() for s in current_text.split('.') if s.strip()]
+            if sentences:
+                # Target the final sentence or segment as the 'last paragraph'
+                last_paragraph = sentences[-1] + "."
+                speak_omen(last_paragraph)
 
 def main():
     root = tk.Tk()
     app = CosmicOracleApp(root)
     root.mainloop()
-
 
 if __name__ == "__main__":
     main()
