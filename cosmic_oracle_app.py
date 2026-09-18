@@ -2,16 +2,23 @@ import tkinter as tk
 from tkinter import ttk
 from random import choice
 import pyttsx3
+import threading
 
-# Initialize the text-to-speech engine
-engine = pyttsx3.init()
-engine.setProperty('rate', 150)  # Speed of speech
-engine.setProperty('volume', 1.0) # Volume (0.0 to 1.0)
-
+# Initialize the text-to-speech engine safely
 def speak_omen(text):
-    """Speaks the generated omen text aloud."""
-    engine.say(text)
-    engine.runAndWait()
+    """Speaks the generated omen text aloud in a background thread."""
+    def _run_speech():
+        try:
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)
+            engine.setProperty('volume', 1.0)
+            engine.say(text)
+            engine.runAndWait()
+        except Exception as e:
+            print(f"TTS Error: {e}")
+
+    # Start speech in a separate thread so it doesn't block Tkinter
+    threading.Thread(target=_run_speech, daemon=True).start()
 
 READINGS = [
     {
@@ -150,7 +157,6 @@ class CosmicOracleApp:
         )
         self.ask_button.grid(row=0, column=0, sticky="w", padx=(0, 8))
 
-        # Added Listen button right next to the consult button
         self.listen_button = ttk.Button(
             button_row,
             text="🔊 Listen to Omen",
@@ -219,24 +225,17 @@ class CosmicOracleApp:
         self.sign_label.config(text=reading["sign"])
         self.title_label.config(text=f"{reading['title']} for {focus_word}")
         
-        # Combined text view shown in the UI box
         spoken_text = (
             f"{reading['text']} Your question, \"{question}\", is being carried by a current of possibility and personal growth."
         )
         self.text_label.config(text=spoken_text)
         self.question_entry.delete("1.0", "end")
-        # Note: We no longer auto-speak here, so the user can choose to click "Listen to Omen"
 
     def speak_current_omen(self):
-        """Extracts and reads aloud only the last paragraph/sentence block of the current reading."""
+        """Reads aloud the full text currently displayed in the response panel."""
         current_text = self.text_label.cget("text")
         if current_text:
-            # Splitting by sentences or periods to isolate the last paragraph/thought
-            sentences = [s.strip() for s in current_text.split('.') if s.strip()]
-            if sentences:
-                # Target the final sentence or segment as the 'last paragraph'
-                last_paragraph = sentences[-1] + "."
-                speak_omen(last_paragraph)
+            speak_omen(current_text)
 
 def main():
     root = tk.Tk()
