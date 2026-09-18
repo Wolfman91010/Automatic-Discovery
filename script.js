@@ -54,3 +54,45 @@ form.addEventListener('submit', (event) => {
   readingSign.textContent = reading.sign;
   readingText.textContent = `${reading.text} Your question, “${question}”, is being carried by a current of possibility and personal growth.`;
 });
+function speakCurrentOmen() {
+    if (!('speechSynthesis' in window)) {
+        console.warn("Speech synthesis is not supported in this browser.");
+        return;
+    }
+
+    // Locate the paragraph containing the main omen text body
+    // (Targeting the container element shown in your live view)
+    const omenParagraph = document.querySelector('section[aria-live="polite"] p:last-of-type') || 
+                           document.querySelector('.oracle-omen-body');
+
+    if (!omenParagraph) return;
+
+    let rawText = omenParagraph.innerText;
+
+    // Strip out the metadata wrapper sentence: e.g., "Your question, "...", is being carried by..."
+    // This leaves only the pure core message to be spoken out loud.
+    let cleanOmenText = rawText.replace(/Your question,.*?, is being carried by.*?\./gs, "").trim();
+
+    // Fallback if the regex pattern misses
+    if (!cleanOmenText) {
+        cleanOmenText = rawText;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(cleanOmenText);
+    
+    // Set an oracle-like, deliberate cadence
+    utterance.rate = 0.92;  // Slightly measured pace
+    utterance.pitch = 1.0;  // Neutral, grounded pitch
+
+    // Select a smooth natural system voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha'))) || voices[0];
+    
+    if (preferredVoice) {
+        utterance.voice = preferredVoice;
+    }
+
+    // Cancel any ongoing speech so they don't overlap, then speak
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+}
